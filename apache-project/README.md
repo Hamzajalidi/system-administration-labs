@@ -1,5 +1,4 @@
 
-
 <h1 align="center">🌐 Lab 01 — Apache Web Server</h1>
 
 <p align="center">
@@ -8,40 +7,32 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Vagrant-2.4.9-blue?logo=vagrant" />
-  <img src="https://img.shields.io/badge/Apache-2.4-red?logo=apache" />
-  <img src="https://img.shields.io/badge/Ubuntu-22.04-orange?logo=ubuntu" />
-  <img src="https://img.shields.io/badge/VMware-Workstation-grey?logo=vmware" />
+  <img src="https://img.shields.io/badge/Vagrant-2.4.9-blue?logo=vagrant&logoColor=white" />
+  <img src="https://img.shields.io/badge/Apache-2.4-red?logo=apache&logoColor=white" />
+  <img src="https://img.shields.io/badge/Ubuntu-22.04-orange?logo=ubuntu&logoColor=white" />
+  <img src="https://img.shields.io/badge/VMware-Workstation-grey?logo=vmware&logoColor=white" />
+  <img src="https://img.shields.io/badge/UFW-Firewall-critical?logo=linux&logoColor=white" />
   <img src="https://img.shields.io/badge/License-MIT-green" />
 </p>
-## 🖼️ Screenshots Gallery
 
-<table>
-  <tr>
-    <td align="center">
-      <img src="screenshots/apache-default-page.png" width="280"/><br>
-      <b>Apache Default Page</b>
-    </td>
-    <td align="center">
-      <img src="screenshots/VirtualHost_Page.png" width="280"/><br>
-      <b>Custom VirtualHost (monsite.local)</b>
-    </td>
-    <td align="center">
-      <img src="screenshots/UFW_Status.png" width="280"/><br>
-      <b>UFW Firewall Active</b>
-    </td>
-  </tr>
-</table>
+<p align="center">
+  <a href="#-quick-start-vagrant"><img src="https://img.shields.io/badge/-Quick%20Start-blueviolet?style=for-the-badge" /></a>
+  <a href="#-verification"><img src="https://img.shields.io/badge/-Screenshots-informational?style=for-the-badge" /></a>
+  <a href="#-troubleshooting"><img src="https://img.shields.io/badge/-Troubleshooting-yellow?style=for-the-badge" /></a>
+</p>
+
 ---
 
 ## 📑 Table of Contents
 
 - [Overview](#-overview)
+- [Architecture](#-architecture)
 - [Prerequisites](#-prerequisites)
 - [Quick Start (Vagrant)](#-quick-start-vagrant)
 - [Manual Setup](#-manual-setup)
 - [Project Structure](#-project-structure)
 - [Verification](#-verification)
+- [Challenges Faced](#-challenges-faced)
 - [Troubleshooting](#-troubleshooting)
 - [Lessons Learned](#-lessons-learned)
 
@@ -59,22 +50,49 @@ This lab provisions a fully configured Apache2 web server on Ubuntu 22.04 using 
 | **Port Forwarding** | Access from host via `localhost:8080` |
 | **Infrastructure as Code** | Entire environment defined in `Vagrantfile` |
 
+### 🧠 Skills Demonstrated
+
+`Linux Administration` · `Apache Configuration` · `VirtualHost Setup` · `Firewall Management (UFW)` · `Vagrant Provisioning` · `Infrastructure as Code` · `DNS / hosts File Configuration` · `Systemd Service Management`
+
+---
+
+## 🏗️ Architecture
+
+```
+┌─────────────────┐      Port 8080       ┌──────────────────┐      Port 80         ┌─────────────────┐
+│   Host (Windows)│  ═══════════════════►│ VM (Ubuntu 22.04)│  ═══════════════════►│   Apache2       │
+│                 │                      │                  │                      │   Web Server    │
+│  monsite.local  │◄─────────────────────│  192.168.56.10   │◄─────────────────────│   monsite.local │
+│  127.0.0.1      │   hosts file         │  NAT + Private   │   VirtualHost        │   DocumentRoot  │
+└─────────────────┘                      └──────────────────┘                      └─────────────────┘
+```
+
+**Data Flow:**
+1. Browser requests `http://monsite.local:8080`
+2. Vagrant forwards port 8080 → 80 on the VM
+3. Apache matches `ServerName monsite.local`
+4. Serves content from `/var/www/monsite.local`
+
 ---
 
 ## ⚙️ Prerequisites
 
-- [VMware Workstation](https://www.vmware.com/products/workstation-player.html) (or VirtualBox)
-- [Vagrant](https://www.vagrantup.com/) 2.4.9+
-- [Vagrant VMware Utility](https://developer.hashicorp.com/vagrant/docs/providers/vmware/vagrant-vmware-utility) (if using VMware)
-- Vagrant VMware plugin:
-  ```bash
-  vagrant plugin install vagrant-vmware-desktop
-  ```
+| Tool | Version | Purpose |
+|------|---------|---------|
+| [VMware Workstation](https://www.vmware.com/products/workstation-player.html) | Latest | Virtualization |
+| [Vagrant](https://www.vagrantup.com/) | 2.4.9+ | VM orchestration |
+| [Vagrant VMware Utility](https://developer.hashicorp.com/vagrant/docs/providers/vmware/vagrant-vmware-utility) | Latest | VMware provider support |
+
+```bash
+# Install VMware plugin
+vagrant plugin install vagrant-vmware-desktop
+```
 
 ---
 
 ## 🚀 Quick Start (Vagrant)
 
+```bash
 # 1. Clone and enter the project
 git clone https://github.com/Hamzajalidi/system-administration-labs.git
 cd system-administration-labs/apache-project
@@ -83,7 +101,6 @@ cd system-administration-labs/apache-project
 vagrant up --provider=vmware_desktop
 
 # 3. SSH into the server
-```
 vagrant ssh
 ```
 
@@ -125,6 +142,7 @@ sudo ufw enable
 ```bash
 sudo mkdir -p /var/www/monsite.local
 sudo cp html/index.html /var/www/monsite.local/
+sudo chown -R www-data:www-data /var/www/monsite.local
 ```
 
 ### 4. Enable VirtualHost
@@ -136,9 +154,28 @@ sudo systemctl reload apache2
 ```
 
 ### 5. Edit hosts file (on Windows)
-Add to ` code C:\Windows\System32\drivers\etc\hosts`:
+Add to `C:\Windows\System32\drivers\etc\hosts`:
 ```
 127.0.0.1    monsite.local
+```
+
+### 📄 VirtualHost Configuration (`config/vhost.conf`)
+
+```apacheconf
+<VirtualHost *:80>
+    ServerName monsite.local
+    ServerAlias www.monsite.local
+    DocumentRoot /var/www/monsite.local
+
+    <Directory /var/www/monsite.local>
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    ErrorLog ${APACHE_LOG_DIR}/monsite_error.log
+    CustomLog ${APACHE_LOG_DIR}/monsite_access.log combined
+</VirtualHost>
 ```
 
 ---
@@ -150,40 +187,97 @@ apache-project/
 ├── 📂 config/
 │   └── vhost.conf              # Apache VirtualHost configuration
 ├── 📂 html/
-│   └── index.html              # Custom web page
+│   └── index.html              # Custom web page served by Apache
 ├── 📂 scripts/
-│   └── setup.sh                # Automated setup script
-├── 📂 screenshots/             # Full step-by-step gallery
-├── 📄 Vagrantfile              # VM definition
+│   └── setup.sh                # Automated provisioning script
+├── 📂 screenshots/             # Step-by-step proof of work
+│   ├── 01-virtualhost-page.png
+│   ├── 02-ufw-status.png
+│   └── 03-apache-status.png
+├── 📄 Vagrantfile              # VM definition & provisioning
 ├── 📄 README.md                # This file
 └── 📄 LICENSE                  # MIT License
 ```
 
 ---
-### Apache Default Page
-![Apache Default Page](screenshots/apache-default-page.png)
-
-### Custom VirtualHost (`monsite.local`)
-![VirtualHost Page](screenshots/VirtualHost_Page.png)
-
-### UFW Firewall Active
-![UFW Status](screenshots/UFW_Status.png)
-
 
 ## ✅ Verification
 
-> 📁 **For the full gallery** (Vagrant install, VM setup, log files, etc.)  
+> 📁 **For the full gallery** (Vagrant install, VM setup, log files, etc.)
 > See the [`screenshots/`](screenshots/) directory.
+
+### Result Summary
+
+| Check | Status | Evidence |
+|-------|--------|----------|
+| Apache2 Service | ✅ Active | `systemctl status apache2` |
+| VirtualHost Config | ✅ Loaded | `monsite.local.conf` |
+| UFW Firewall | ✅ Active | Ports 22 & 80 open |
+| Web Access | ✅ 200 OK | `http://monsite.local:8080` |
+
+### Screenshots
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <b>🔥 Custom VirtualHost</b><br>
+      <code>monsite.local</code> serving from dedicated document root<br><br>
+      <img src="screenshots/01-virtualhost-page.png" width="380"/>
+    </td>
+    <td align="center" width="50%">
+      <b>🛡️ UFW Firewall Active</b><br>
+      SSH (22) and HTTP (80) ports allowed<br><br>
+      <img src="screenshots/02-ufw-status.png" width="380"/>
+    </td>
+  </tr>
+  <tr><td colspan="2">&nbsp;</td></tr>
+  <tr>
+    <td align="center" width="50%">
+      <b>⚙️ Apache Service Status</b><br>
+      Service active and running<br><br>
+      <img src="screenshots/03-apache-status.png" width="380"/>
+    </td>
+    <td align="center" width="50%">
+      <b>📊 Request Flow</b><br>
+      Client → Apache Listener → VirtualHost Match → Document Served<br><br>
+      <pre>
+Browser:8080 ──► VM:80 ──► Apache
+      │                         │
+      └─► hosts file            └─► /var/www/monsite.local
+      </pre>
+    </td>
+  </tr>
+</table>
+
+---
+
+## 🔥 Challenges Faced
+
+> **Problem:** After enabling UFW firewall, I lost SSH access to the VM.
+>
+> **Root Cause:** UFW blocks all incoming ports by default, including SSH (port 22).
+>
+> **Solution:** Always allow SSH **before** enabling UFW:
+> ```bash
+> sudo ufw allow 22/tcp   # Do this FIRST
+> sudo ufw allow 80/tcp
+> sudo ufw enable
+> ```
+>
+> **Lesson:** In production, locking yourself out of a remote server means physical access or rescue mode is required. Order of operations matters in firewall configuration.
+
 ---
 
 ## 🔧 Troubleshooting
 
-| Issue | Solution |
-|-------|----------|
+| ⚠️ Issue | ✅ Solution |
+|----------|-------------|
 | `localhost:8080` not loading | Ensure VM is running: `vagrant up` |
 | `monsite.local` not resolving | Add `127.0.0.1 monsite.local` to your hosts file |
 | UFW blocks SSH | Always run `ufw allow 22/tcp` **before** `ufw enable` |
 | Apache fails to start | Run `sudo apachectl configtest` to check syntax |
+| 403 Forbidden on VirtualHost | Check folder permissions: `sudo chown -R www-data:www-data /var/www/monsite.local` |
+| Changes not reflecting | Restart Apache: `sudo systemctl restart apache2` |
 
 ---
 
@@ -191,9 +285,11 @@ apache-project/
 
 > **Lesson 1:** Always open SSH (port 22) in UFW **before** enabling the firewall, or you will lock yourself out.
 
-> **Lesson 2:** Apache VirtualHost allows hosting multiple websites on a single server using different domain names.
+> **Lesson 2:** Apache VirtualHost allows hosting multiple websites on a single server using different domain names and document roots.
 
-> **Lesson 3:** Vagrant turns a virtual environment into code — reproducible, versionable, and shareable.
+> **Lesson 3:** Vagrant turns a virtual environment into code — reproducible, versionable, and shareable. This is the foundation of Infrastructure as Code (IaC).
+
+> **Lesson 4:** The `hosts` file is a local DNS resolver. It maps domain names to IP addresses without needing a real DNS server.
 
 ---
 
@@ -204,6 +300,6 @@ apache-project/
 ---
 
 <p align="center">
-  Built with ❤️ for hands-on System Administration learning.
+  Built with ❤️ for hands-on System Administration learning.<br>
 </p>
-```
+
