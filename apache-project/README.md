@@ -156,7 +156,9 @@ apache-project/
 ![VirtualHost Page](screenshots/VirtualHost_Page.png)
 
 ### UFW Firewall Active
+
 ![UFW Status](screenshots/UFW_Status.png)
+
 ---
 
 ## 🔧 Troubleshooting
