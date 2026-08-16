@@ -14,7 +14,24 @@
   <img src="https://img.shields.io/badge/VMware-Workstation-grey?logo=vmware" />
   <img src="https://img.shields.io/badge/License-MIT-green" />
 </p>
+## 🖼️ Screenshots Gallery
 
+<table>
+  <tr>
+    <td align="center">
+      <img src="screenshots/apache-default-page.png" width="280"/><br>
+      <b>Apache Default Page</b>
+    </td>
+    <td align="center">
+      <img src="screenshots/VirtualHost_Page.png" width="280"/><br>
+      <b>Custom VirtualHost (monsite.local)</b>
+    </td>
+    <td align="center">
+      <img src="screenshots/UFW_Status.png" width="280"/><br>
+      <b>UFW Firewall Active</b>
+    </td>
+  </tr>
+</table>
 ---
 
 ## 📑 Table of Contents
