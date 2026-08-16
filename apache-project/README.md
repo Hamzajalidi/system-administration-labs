@@ -216,39 +216,7 @@ apache-project/
 | Web Access | ✅ 200 OK | `http://monsite.local:8080` |
 
 ### Screenshots
-
-<table>
-  <tr>
-    <td align="center" width="50%">
-      <b>🔥 Custom VirtualHost</b><br>
-      <code>monsite.local</code> serving from dedicated document root<br><br>
-      <img src="screenshots/01-virtualhost-page.png" width="380"/>
-    </td>
-    <td align="center" width="50%">
-      <b>🛡️ UFW Firewall Active</b><br>
-      SSH (22) and HTTP (80) ports allowed<br><br>
-      <img src="screenshots/02-ufw-status.png" width="380"/>
-    </td>
-  </tr>
-  <tr><td colspan="2">&nbsp;</td></tr>
-  <tr>
-    <td align="center" width="50%">
-      <b>⚙️ Apache Service Status</b><br>
-      Service active and running<br><br>
-      <img src="screenshots/03-apache-status.png" width="380"/>
-    </td>
-    <td align="center" width="50%">
-      <b>📊 Request Flow</b><br>
-      Client → Apache Listener → VirtualHost Match → Document Served<br><br>
-      <pre>
-Browser:8080 ──► VM:80 ──► Apache
-      │                         │
-      └─► hosts file            └─► /var/www/monsite.local
-      </pre>
-    </td>
-  </tr>
-</table>
-
+<table> <tr> <td align="center" width="50%"> <b>Apache Default Page</b><br><br> <img src="screenshots/default.png" width="380"/> </td> <td align="center" width="50%"> <b>Custom VirtualHost (<code>monsite.local</code>)</b><br><br> <img src="screenshots/vhost.png" width="380"/> </td> </tr> <tr><td colspan="2">&nbsp;</td></tr> <tr> <td align="center" width="50%"> <b>Apache Service Status</b><br><br> <img src="screenshots/status.png" width="380"/> </td> <td align="center" width="50%"> <b>UFW Firewall Active</b><br><br> <img src="screenshots/ufw.png" width="380"/> </td> </tr> </table>
 ---
 
 ## 🔥 Challenges Faced
