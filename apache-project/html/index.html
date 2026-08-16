@@ -1,1 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VHOST-01 — Apache Virtual Host, As Built</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#eef2f7;
+    --grid:#d7e0ec;
+    --ink:#17233b;
+    --accent:#2f5fd6;
+    --muted:#6b7a94;
+    --ok:#1f8a5f;
+    --rule:#b9c5d8;
+  }
 
+  *{ box-sizing:border-box; }
+
+  html,body{
+    margin:0;
+    padding:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+  }
+
+  body{
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 28px 28px;
+    padding: 40px 20px;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .sheet{
+    position:relative;
+    width:100%;
+    max-width:860px;
+    background:rgba(255,255,255,0.55);
+    border:1.5px solid var(--ink);
+    box-shadow: 0 0 0 1px var(--paper), 0 24px 60px rgba(23,35,59,0.12);
+  }
+
+  .crop{ position:absolute; width:18px; height:18px; border-color:var(--ink); }
+  .crop.tl{ top:-9px; left:-9px; border-top:1.5px solid; border-left:1.5px solid; }
+  .crop.tr{ top:-9px; right:-9px; border-top:1.5px solid; border-right:1.5px solid; }
+  .crop.bl{ bottom:-9px; left:-9px; border-bottom:1.5px solid; border-left:1.5px solid; }
+  .crop.br{ bottom:-9px; right:-9px; border-bottom:1.5px solid; border-right:1.5px solid; }
+
+  header{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    padding: 18px 28px;
+    border-bottom:1px solid var(--rule);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    letter-spacing:0.06em;
+    color:var(--muted);
+    text-transform:uppercase;
+  }
+  header .doc-no{ color:var(--ink); font-weight:500; }
+
+  main{ padding: 44px 28px 20px; }
+
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:0.12em;
+    color:var(--accent);
+    text-transform:uppercase;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:16px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:7px; height:7px;
+    background:var(--ok);
+    display:inline-block;
+    transform:rotate(45deg);
+  }
+
+  h1{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;
+    font-size: clamp(28px, 4.6vw, 42px);
+    line-height:1.15;
+    letter-spacing:-0.01em;
+    margin: 0 0 18px;
+    max-width: 14ch;
+  }
+
+  p.lead{
+    font-size:15px;
+    line-height:1.75;
+    color:#3a4863;
+    max-width:54ch;
+    margin: 0 0 40px;
+  }
+
+  .diagram{
+    display:grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border-top:1px solid var(--rule);
+    border-bottom:1px solid var(--rule);
+    padding: 28px 0 34px;
+    margin-bottom: 40px;
+    position:relative;
+  }
+
+  .node{
+    position:relative;
+    padding: 0 14px;
+    text-align:left;
+  }
+
+  .node .idx{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:var(--accent);
+    border:1px solid var(--accent);
+    width:22px; height:22px;
+    display:flex; align-items:center; justify-content:center;
+    border-radius:50%;
+    margin-bottom:10px;
+    background:var(--paper);
+  }
+
+  .node .label{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:600;
+    font-size:13.5px;
+    margin-bottom:4px;
+  }
+
+  .node .sub{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10.5px;
+    color:var(--muted);
+    line-height:1.5;
+  }
+
+  .node:not(:last-child)::after{
+    content:"";
+    position:absolute;
+    top:11px;
+    left: calc(100% - 8px);
+    width: 28px;
+    border-top: 1.5px dashed var(--rule);
+  }
+
+  .titleblock{
+    border:1px solid var(--ink);
+    border-left:3px solid var(--accent);
+    display:grid;
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .field{
+    padding: 12px 16px;
+    border-right:1px solid var(--rule);
+    border-bottom:1px solid var(--rule);
+  }
+  .field:nth-child(4n){ border-right:none; }
+
+  .field .k{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:9.5px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin-bottom:6px;
+  }
+  .field .v{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:var(--ink);
+    word-break:break-word;
+  }
+  .field .v.ok{ color:var(--ok); font-weight:500; }
+
+  .stamp{
+    position:absolute;
+    top: 96px;
+    right: 34px;
+    width: 92px;
+    height: 92px;
+    border: 2px solid var(--ok);
+    border-radius:50%;
+    transform: rotate(-14deg);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    color:var(--ok);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10px;
+    letter-spacing:0.08em;
+    line-height:1.4;
+    text-transform:uppercase;
+    opacity:0.9;
+  }
+  .stamp::before{
+    content:"";
+    position:absolute;
+    inset:6px;
+    border:1px solid var(--ok);
+    border-radius:50%;
+  }
+
+  footer{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding: 14px 28px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10.5px;
+    color:var(--muted);
+    letter-spacing:0.04em;
+    border-top:1px solid var(--rule);
+  }
+
+  @media (max-width:640px){
+    .diagram{ grid-template-columns: 1fr 1fr; row-gap:26px; }
+    .node:not(:last-child)::after{ display:none; }
+    .titleblock{ grid-template-columns: 1fr 1fr; }
+    .stamp{ top:auto; bottom:20px; right:20px; width:76px; height:76px; }
+    h1{ max-width:none; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="sheet">
+    <span class="crop tl"></span><span class="crop tr"></span>
+    <span class="crop bl"></span><span class="crop br"></span>
+
+    <header>
+      <span>Apache HTTP Server — Site Config</span>
+      <span class="doc-no">DWG NO. VHOST-01</span>
+    </header>
+
+    <main>
+      <div class="eyebrow">Virtual host — resolved</div>
+      <h1>This domain now routes through your Apache Virtual Host.</h1>
+      <p class="lead">
+        The request reached the server, matched a <code>ServerName</code> or
+        <code>ServerAlias</code> directive, and was handed off to the correct
+        document root below. Configuration confirmed — nothing else to do here.
+      </p>
+
+      <div class="diagram">
+        <div class="node">
+          <div class="idx">01</div>
+          <div class="label">Client request</div>
+          <div class="sub">GET / HTTP/1.1</div>
+        </div>
+        <div class="node">
+          <div class="idx">02</div>
+          <div class="label">Apache listener</div>
+          <div class="sub">:80 / :443</div>
+        </div>
+        <div class="node">
+          <div class="idx">03</div>
+          <div class="label">VirtualHost match</div>
+          <div class="sub">ServerName lookup</div>
+        </div>
+        <div class="node">
+          <div class="idx">04</div>
+          <div class="label">Document served</div>
+          <div class="sub">200 OK</div>
+        </div>
+      </div>
+
+      <div class="titleblock">
+        <div class="field"><div class="k">Status</div><div class="v ok">Active</div></div>
+        <div class="field"><div class="k">Document root</div><div class="v">/var/www/html</div></div>
+        <div class="field"><div class="k">Config file</div><div class="v">000-default.conf</div></div>
+        <div class="field"><div class="k">Response</div><div class="v ok">200 OK</div></div>
+      </div>
+
+      <div class="stamp">Config<br>verified</div>
+    </main>
+
+    <footer>
+      <span>Apache HTTP Server</span>
+      <span>Scale — N/A · Rev A</span>
+    </footer>
+  </div>
+
+</body>
+</html>
