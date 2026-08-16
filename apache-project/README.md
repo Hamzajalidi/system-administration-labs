@@ -158,6 +158,15 @@ apache-project/
 > 📁 **For the full gallery** (Vagrant install, VM setup, log files, etc.)  
 > See the [`screenshots/`](screenshots/) directory.
 
+### Apache VirtualHost Working
+![VirtualHost Page](screenshots/VirtualHost_Page.png)
+
+### UFW Firewall Status
+![UFW Status](screenshots/UFW_Status.png)
+
+### Apache Default Page
+![Apache Default](screenshots/apache-default-page.png)
+
 ---
 
 ## 🔧 Troubleshooting
