@@ -143,12 +143,6 @@ apache-project/
 ```
 
 ---
-
-## ✅ Verification
-
-> 📁 **For the full gallery** (Vagrant install, VM setup, log files, etc.)  
-> See the [`screenshots/`](screenshots/) directory.
-
 ### Apache Default Page
 ![Apache Default Page](screenshots/apache-default-page.png)
 
@@ -156,9 +150,13 @@ apache-project/
 ![VirtualHost Page](screenshots/VirtualHost_Page.png)
 
 ### UFW Firewall Active
-
 ![UFW Status](screenshots/UFW_Status.png)
 
+
+## ✅ Verification
+
+> 📁 **For the full gallery** (Vagrant install, VM setup, log files, etc.)  
+> See the [`screenshots/`](screenshots/) directory.
 ---
 
 ## 🔧 Troubleshooting
