@@ -146,18 +146,17 @@ apache-project/
 
 ## ✅ Verification
 
-### Apache Default Page
-![Apache Default Page](screenshots/12-apache-default-page.png)
-
-### Custom VirtualHost (`monsite.local`)
-![VirtualHost Page](screenshots/15-virtualhost-page.png)
-
-### UFW Firewall Active
-![UFW Status](screenshots/18-ufw-status.png)
-
 > 📁 **For the full gallery** (Vagrant install, VM setup, log files, etc.)  
 > See the [`screenshots/`](screenshots/) directory.
 
+### Apache Default Page
+![Apache Default Page](screenshots/apache-default-page.png)
+
+### Custom VirtualHost (`monsite.local`)
+![VirtualHost Page](screenshots/VirtualHost_Page.png)
+
+### UFW Firewall Active
+![UFW Status](screenshots/UFW_Status.png)
 ---
 
 ## 🔧 Troubleshooting
